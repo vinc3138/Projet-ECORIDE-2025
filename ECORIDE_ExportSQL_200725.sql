@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `avis` (
   CONSTRAINT `FK_avis_reservation` FOREIGN KEY (`reservation_id`) REFERENCES `reservation` (`reservation_id`),
   CONSTRAINT `FK_avis_statut_commentaire` FOREIGN KEY (`statut`) REFERENCES `statut_commentaire` (`id_statut_commentaire`),
   CONSTRAINT `FK_avis_utilisateur` FOREIGN KEY (`utilisateur_id`) REFERENCES `utilisateur` (`utilisateur_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1010 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1010 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Listage des données de la table ecoride.avis : ~10 rows (environ)
 INSERT INTO `avis` (`avis_id`, `commentaire`, `note`, `statut`, `utilisateur_id`, `covoiturage_id`, `reservation_id`, `date_creation_commentaire`) VALUES
@@ -55,9 +55,9 @@ CREATE TABLE IF NOT EXISTS `covoiturage` (
   `date_depart` date NOT NULL,
   `heure_depart` time NOT NULL,
   `ville_depart` varchar(50) NOT NULL,
-  `adresse_depart` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
-  `ville_arrivee` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `adresse_arrivee` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `adresse_depart` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
+  `ville_arrivee` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `adresse_arrivee` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
   `date_arrivee` date NOT NULL,
   `heure_arrivee` time NOT NULL,
   `duree_trajet` time DEFAULT '00:00:00',
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `covoiturage` (
   CONSTRAINT `FK_covoiturage_statut_covoiturage` FOREIGN KEY (`statut_trajet_id`) REFERENCES `statut_covoiturage` (`statut_covoiturage_id`),
   CONSTRAINT `FK_covoiturage_utilisateur` FOREIGN KEY (`chauffeur_id`) REFERENCES `utilisateur` (`utilisateur_id`),
   CONSTRAINT `FK_covoiturage_voiture` FOREIGN KEY (`voiture_id`) REFERENCES `voiture` (`voiture_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1018 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1018 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Listage des données de la table ecoride.covoiturage : ~10 rows (environ)
 INSERT INTO `covoiturage` (`covoiturage_id`, `date_creation`, `date_depart`, `heure_depart`, `ville_depart`, `adresse_depart`, `ville_arrivee`, `adresse_arrivee`, `date_arrivee`, `heure_arrivee`, `duree_trajet`, `distance_trajet`, `nb_place`, `prix_passager`, `est_ecologique`, `statut_trajet_id`, `chauffeur_id`, `voiture_id`, `date_debut`, `date_fin`) VALUES
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS `marque` (
   `marque_id` int NOT NULL AUTO_INCREMENT,
   `marque` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`marque_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1010 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1010 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Listage des données de la table ecoride.marque : ~10 rows (environ)
 INSERT INTO `marque` (`marque_id`, `marque`) VALUES
@@ -116,10 +116,10 @@ INSERT INTO `marque` (`marque_id`, `marque`) VALUES
 -- Listage de la structure de table ecoride. preference
 CREATE TABLE IF NOT EXISTS `preference` (
   `preference_id` int NOT NULL AUTO_INCREMENT,
-  `preference` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `statut_preference` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'USER',
+  `preference` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `statut_preference` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'USER',
   PRIMARY KEY (`preference_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=1010 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1010 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Listage des données de la table ecoride.preference : ~10 rows (environ)
 INSERT INTO `preference` (`preference_id`, `preference`, `statut_preference`) VALUES
@@ -137,9 +137,9 @@ INSERT INTO `preference` (`preference_id`, `preference`, `statut_preference`) VA
 -- Listage de la structure de table ecoride. privilege
 CREATE TABLE IF NOT EXISTS `privilege` (
   `privilege_id` int NOT NULL AUTO_INCREMENT,
-  `privilege` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT '',
+  `privilege` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`privilege_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Listage des données de la table ecoride.privilege : ~3 rows (environ)
 INSERT INTO `privilege` (`privilege_id`, `privilege`) VALUES
@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS `reservation` (
   CONSTRAINT `FK_reservation_covoiturage` FOREIGN KEY (`covoiturage_id`) REFERENCES `covoiturage` (`covoiturage_id`),
   CONSTRAINT `FK_reservation_statut_reservation` FOREIGN KEY (`statut_reservation_id`) REFERENCES `statut_reservation` (`statut_reservation_id`),
   CONSTRAINT `FK_reservation_utilisateur` FOREIGN KEY (`utilisateur_id`) REFERENCES `utilisateur` (`utilisateur_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1015 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=1015 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC;
 
 -- Listage des données de la table ecoride.reservation : ~11 rows (environ)
 INSERT INTO `reservation` (`reservation_id`, `utilisateur_id`, `covoiturage_id`, `date_reservation`, `nb_places_reservees`, `statut_reservation_id`, `paiement_realise`, `date_paiement`, `avis_redige`, `note_envoye`) VALUES
@@ -189,7 +189,7 @@ CREATE TABLE IF NOT EXISTS `role` (
   `role_id` int NOT NULL AUTO_INCREMENT,
   `libelle` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`role_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Listage des données de la table ecoride.role : ~5 rows (environ)
 INSERT INTO `role` (`role_id`, `libelle`) VALUES
@@ -204,7 +204,7 @@ CREATE TABLE IF NOT EXISTS `statut_commentaire` (
   `id_statut_commentaire` int NOT NULL AUTO_INCREMENT,
   `statut_commentaire` char(50) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_statut_commentaire`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Listage des données de la table ecoride.statut_commentaire : ~4 rows (environ)
 INSERT INTO `statut_commentaire` (`id_statut_commentaire`, `statut_commentaire`) VALUES
@@ -218,9 +218,9 @@ INSERT INTO `statut_commentaire` (`id_statut_commentaire`, `statut_commentaire`)
 -- Listage de la structure de table ecoride. statut_covoiturage
 CREATE TABLE IF NOT EXISTS `statut_covoiturage` (
   `statut_covoiturage_id` int NOT NULL AUTO_INCREMENT,
-  `statut_covoiturage` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `statut_covoiturage` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   PRIMARY KEY (`statut_covoiturage_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Listage des données de la table ecoride.statut_covoiturage : ~6 rows (environ)
 INSERT INTO `statut_covoiturage` (`statut_covoiturage_id`, `statut_covoiturage`) VALUES
@@ -236,7 +236,7 @@ CREATE TABLE IF NOT EXISTS `statut_reservation` (
   `statut_reservation_id` int NOT NULL,
   `statut_reservation` char(50) DEFAULT NULL,
   PRIMARY KEY (`statut_reservation_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Listage des données de la table ecoride.statut_reservation : ~6 rows (environ)
 INSERT INTO `statut_reservation` (`statut_reservation_id`, `statut_reservation`) VALUES
@@ -254,14 +254,14 @@ CREATE TABLE IF NOT EXISTS `utilisateur` (
   `privilege_id` int NOT NULL,
   `photo` blob,
   `date_inscription` timestamp NULL DEFAULT (now()),
-  `nom` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `prenom` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `date_naissance` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `pseudo` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `email` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `telephone` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `adresse` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `nom` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `prenom` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `date_naissance` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `pseudo` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `email` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `telephone` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `adresse` char(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `credit` float DEFAULT NULL,
   `note` float DEFAULT NULL,
   `date_creation_utilisateur` datetime DEFAULT (curdate()),
@@ -272,7 +272,7 @@ CREATE TABLE IF NOT EXISTS `utilisateur` (
   KEY `FK_utilisateur_privilege` (`privilege_id`),
   CONSTRAINT `FK_utilisateur_privilege` FOREIGN KEY (`privilege_id`) REFERENCES `privilege` (`privilege_id`),
   CONSTRAINT `FK_utilisateur_role` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1035 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1035 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Listage des données de la table ecoride.utilisateur : ~19 rows (environ)
 INSERT INTO `utilisateur` (`utilisateur_id`, `role_id`, `privilege_id`, `photo`, `date_inscription`, `nom`, `prenom`, `date_naissance`, `pseudo`, `email`, `password`, `telephone`, `adresse`, `credit`, `note`, `date_creation_utilisateur`) VALUES
@@ -304,7 +304,7 @@ CREATE TABLE IF NOT EXISTS `utilisateur_preference` (
   KEY `preference_id` (`preference_id`),
   CONSTRAINT `utilisateur_preference_ibfk_1` FOREIGN KEY (`utilisateur_id`) REFERENCES `utilisateur` (`utilisateur_id`),
   CONSTRAINT `utilisateur_preference_ibfk_2` FOREIGN KEY (`preference_id`) REFERENCES `preference` (`preference_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Listage des données de la table ecoride.utilisateur_preference : ~33 rows (environ)
 INSERT INTO `utilisateur_preference` (`utilisateur_id`, `preference_id`) VALUES
@@ -346,11 +346,11 @@ INSERT INTO `utilisateur_preference` (`utilisateur_id`, `preference_id`) VALUES
 CREATE TABLE IF NOT EXISTS `voiture` (
   `voiture_id` int NOT NULL AUTO_INCREMENT,
   `marque_id` int DEFAULT NULL,
-  `modele` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `immatriculation` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `energie` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
-  `couleur` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-  `date_immatriculation` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `modele` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `immatriculation` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `energie` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `couleur` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `date_immatriculation` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `nb_places_voiture` int DEFAULT NULL,
   `utilisateur_id` int DEFAULT NULL,
   PRIMARY KEY (`voiture_id`) USING BTREE,
@@ -359,7 +359,7 @@ CREATE TABLE IF NOT EXISTS `voiture` (
   KEY `FK_voiture_utilisateur` (`utilisateur_id`),
   CONSTRAINT `FK_voiture_marque` FOREIGN KEY (`marque_id`) REFERENCES `marque` (`marque_id`),
   CONSTRAINT `FK_voiture_utilisateur` FOREIGN KEY (`utilisateur_id`) REFERENCES `utilisateur` (`utilisateur_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1010 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=1010 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Listage des données de la table ecoride.voiture : ~10 rows (environ)
 INSERT INTO `voiture` (`voiture_id`, `marque_id`, `modele`, `immatriculation`, `energie`, `couleur`, `date_immatriculation`, `nb_places_voiture`, `utilisateur_id`) VALUES
