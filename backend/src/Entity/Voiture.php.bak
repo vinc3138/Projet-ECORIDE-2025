@@ -1,0 +1,135 @@
+<?php
+
+namespace App\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity]
+class Voiture
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $voiture_id = null;
+
+    #[ORM\ManyToOne(targetEntity: Marque::class)]
+    #[ORM\JoinColumn(name: 'marque_id', referencedColumnName: 'marque_id', nullable: true)]
+    private ?Marque $marque = null;
+
+    #[ORM\Column(type: 'string', length: 50)]
+    private string $modele;
+
+    #[ORM\Column(type: 'string', length: 50, unique: true)]
+    private string $immatriculation;
+
+    #[ORM\Column(type: 'string', length: 50)]
+    private string $energie;
+
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
+    private ?string $couleur = null;
+
+    #[ORM\Column(type: 'string', length: 50, nullable: true)]
+    private ?string $date_immatriculation = null;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $nb_places_voiture = null;
+
+    #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
+    #[ORM\JoinColumn(name: 'utilisateur_id', referencedColumnName: 'utilisateur_id', nullable: true)]
+    private ?Utilisateur $utilisateur = null;
+
+    // --- Getters et Setters ---
+
+    public function getVoitureId(): ?int
+    {
+        return $this->voiture_id;
+    }
+
+    public function getMarque(): ?Marque
+    {
+        return $this->marque;
+    }
+
+    public function setMarque(?Marque $marque): self
+    {
+        $this->marque = $marque;
+        return $this;
+    }
+
+    public function getModele(): string
+    {
+        return $this->modele;
+    }
+
+    public function setModele(string $modele): self
+    {
+        $this->modele = $modele;
+        return $this;
+    }
+
+    public function getImmatriculation(): string
+    {
+        return $this->immatriculation;
+    }
+
+    public function setImmatriculation(string $immatriculation): self
+    {
+        $this->immatriculation = $immatriculation;
+        return $this;
+    }
+
+    public function getEnergie(): string
+    {
+        return $this->energie;
+    }
+
+    public function setEnergie(string $energie): self
+    {
+        $this->energie = $energie;
+        return $this;
+    }
+
+    public function getCouleur(): ?string
+    {
+        return $this->couleur;
+    }
+
+    public function setCouleur(?string $couleur): self
+    {
+        $this->couleur = $couleur;
+        return $this;
+    }
+
+    public function getDateImmatriculation(): ?string
+    {
+        return $this->date_immatriculation;
+    }
+
+    public function setDateImmatriculation(?string $date_immatriculation): self
+    {
+        $this->date_immatriculation = $date_immatriculation;
+        return $this;
+    }
+
+    public function getNbPlacesVoiture(): ?int
+    {
+        return $this->nb_places_voiture;
+    }
+
+    public function setNbPlacesVoiture(?int $nb_places_voiture): self
+    {
+        $this->nb_places_voiture = $nb_places_voiture;
+        return $this;
+    }
+
+    public function getUtilisateur(): ?Utilisateur
+    {
+        return $this->utilisateur;
+    }
+
+    public function setUtilisateur(?Utilisateur $utilisateur): self
+    {
+        $this->utilisateur = $utilisateur;
+        return $this;
+    }
+}

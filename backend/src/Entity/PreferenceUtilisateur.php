@@ -1,0 +1,42 @@
+<?php
+
+namespace App\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+#[ORM\Entity]
+#[ORM\Table(name: 'utilisateur_preference')]
+class PreferenceUtilisateur
+{
+    #[ORM\Id]
+    #[ORM\ManyToOne(targetEntity: Utilisateur::class, inversedBy: 'utilisateurPreferences')]
+    #[ORM\JoinColumn(name: 'utilisateur_id', referencedColumnName: 'utilisateur_id')]
+    private Utilisateur $utilisateur;
+
+    #[ORM\Id]
+    #[ORM\ManyToOne(targetEntity: Preference::class, inversedBy: 'utilisateurPreferences')]
+    #[ORM\JoinColumn(name: 'preference_id', referencedColumnName: 'preference_id')]
+    private Preference $preference;
+
+    public function getUtilisateur(): Utilisateur
+    {
+        return $this->utilisateur;
+    }
+
+    public function setUtilisateur(Utilisateur $utilisateur): self
+    {
+        $this->utilisateur = $utilisateur;
+        return $this;
+    }
+
+    public function getPreference(): Preference
+    {
+        return $this->preference;
+    }
+
+    public function setPreference(Preference $preference): self
+    {
+        $this->preference = $preference;
+        return $this;
+    }
+}

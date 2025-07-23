@@ -1,0 +1,115 @@
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Reservation;
+use App\Entity\StatutReservation;
+use App\Repository\CovoiturageRepository;
+use App\Service\MailService;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\SecurityBundle\Security;
+use SymfonyCasts\Bundle\ResetPassword\Helper\ResetPasswordHelperInterface;
+
+
+class ParticiperTrajetController extends AbstractController
+{
+    #[Route('/api/trajets/{id}/participer', name: 'trajet_participer', methods: ['POST'])]
+    public function participer(
+        int $id,
+        Security $security,
+        CovoiturageRepository $trajetRepository,
+        EntityManagerInterface $em,
+        MailService $mailService
+    ): JsonResponse {
+
+        $user = $security->getUser();
+
+        if (!$user) {
+            return new JsonResponse(['error' => 'Utilisateur non connecté'], 401);
+        }
+
+        $privilegeId = $user->getPrivilege();
+        if (!in_array($privilegeId, [2, 3])) {
+            return new JsonResponse(['error' => 'Accès interdit : privilèges insuffisants'], 403);
+        }
+
+        $trajet = $trajetRepository->find($id);
+
+        if (!$trajet) {
+            return new JsonResponse(['error' => 'Trajet non trouvé'], 404);
+        }
+
+        if ($trajet->getNbPlace() <= 0) {
+            return new JsonResponse(['error' => 'Aucune place disponible'], 400);
+        }
+
+        $prix = $trajet->getPrixPassager();
+
+        if ($user->getCredit() < $prix) {
+            return new JsonResponse(['error' => 'Crédit insuffisant'], 400);
+        }
+
+        $reservation = new Reservation();
+        $reservation->setUtilisateur($user);
+        $reservation->setCovoiturage($trajet);
+        $reservation->setNbPlacesReservees(1);
+
+        // Utilisation correcte de $em
+        $statutReservation = $em->getRepository(StatutReservation::class)->find(1);
+
+        if (!$statutReservation) {
+            throw $this->createNotFoundException('Statut non trouvé.');
+        }
+
+        $reservation->setStatutReservation($statutReservation);
+        $reservation->setPaiementRealise(0);
+        $reservation->setAvisRedige(0);
+        $reservation->setNoteEnvoye(0);
+
+        // Mise à jour des places disponibles et crédit utilisateur
+        $trajet->setNbPlace($trajet->getNbPlace() - 1);
+        $user->setCredit($user->getCredit() - $prix);
+
+        $em->persist($reservation);
+        $em->flush();
+
+        $mailService->send(
+            $user->getEmail(),
+            "Confirmation de réservation & Facturation - Covoiturage",
+            sprintf("Bonjour %s,
+
+Votre réservation pour le trajet %s → %s est confirmée.
+
+🗓 Date : %s à %s
+🚗 Chauffeur : %s
+
+💰 Facturation :
+- Prix : %.2f €
+- Paiement : Crédit utilisateur
+- Nouveau solde : %.2f €
+
+Merci pour votre confiance et bon trajet !
+
+L’équipe EcoRide",
+
+                $user->getPseudo(),
+                $trajet->getVilleDepart(),
+                $trajet->getVilleArrivee(),
+                $trajet->getDateDepart()->format('d/m/Y'),
+                $trajet->getHeureDepart()->format('H:i'),
+                $trajet->getChauffeur()->getPseudo(),
+                $prix,
+                $user->getCredit()
+            )
+        );
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => 'Participation enregistrée et confirmation envoyée.',
+            'nouveau_credit' => $user->getCredit()
+        ]);
+    }
+}

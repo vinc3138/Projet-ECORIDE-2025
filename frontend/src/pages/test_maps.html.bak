@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Covoiturage avec ORS - Ville + Adresse</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map { height: 500px; margin-top: 10px; }
+    input { width: 300px; margin: 5px; padding: 8px; }
+    .suggestions {
+      border: 1px solid #ccc;
+      max-height: 150px;
+      overflow-y: auto;
+      background: white;
+      position: absolute;
+      z-index: 1000;
+      width: 300px;
+    }
+    .suggestions div {
+      padding: 5px;
+      cursor: pointer;
+    }
+    .suggestions div:hover {
+      background-color: #eee;
+    }
+    .input-wrapper {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Planifier un trajet</h2>
+
+  <div class="input-wrapper">
+    <label for="startCity">Ville de départ</label><br />
+    <input id="startCity" placeholder="Ville de départ" autocomplete="off" />
+    <div id="startCity-suggestions" class="suggestions"></div>
+  </div>
+
+  <div class="input-wrapper">
+    <label for="startAddress">Adresse de départ</label><br />
+    <input id="startAddress" placeholder="Adresse de départ" autocomplete="off" disabled />
+    <div id="startAddress-suggestions" class="suggestions"></div>
+  </div>
+
+  <div class="input-wrapper">
+    <label for="endCity">Ville d'arrivée</label><br />
+    <input id="endCity" placeholder="Ville d'arrivée" autocomplete="off" />
+    <div id="endCity-suggestions" class="suggestions"></div>
+  </div>
+
+  <div class="input-wrapper">
+    <label for="endAddress">Adresse d'arrivée</label><br />
+    <input id="endAddress" placeholder="Adresse d'arrivée" autocomplete="off" disabled />
+    <div id="endAddress-suggestions" class="suggestions"></div>
+  </div>
+
+  <button onclick="calculateRoute()">Calculer le trajet</button>
+
+  <div id="infos" style="margin-top: 10px; font-weight: bold;"></div>
+  <div id="routesUsed" style="margin-top: 10px; font-weight: bold;"></div>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <script>
+    const apiKey = "5b3ce3597851110001cf62483d42dd8e7c144183b22a1e4f3d4e1279";
+
+    let map = L.map('map').setView([48.8566, 2.3522], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    let routeLayers = [];
+    let startCityCoords = null, endCityCoords = null;
+    let selectedStartCity = "", selectedEndCity = "";
+    let startAddressCoords = null, endAddressCoords = null;
+
+    // ✅ Fonction générique de géocodage avec couche personnalisée
+    async function geocode(query, layersFilter = []) {
+      if (!query) return [];
+      let url = `https://api.openrouteservice.org/geocode/search?api_key=${apiKey}&text=${encodeURIComponent(query)}&boundary.country=FR`;
+      if (layersFilter.length > 0) {
+        url += `&layers=${layersFilter.join(',')}`;
+      }
+
+      const response = await fetch(url);
+      if (!response.ok) return [];
+      const data = await response.json();
+      return data.features;
+    }
+
+    function setupAutocomplete(inputId, suggestionBoxId, setCoordsCallback, layersFilter = [], onSelectCallback = null) {
+      const input = document.getElementById(inputId);
+      const suggestionBox = document.getElementById(suggestionBoxId);
+
+      input.addEventListener('input', async () => {
+        const query = input.value.trim();
+        suggestionBox.innerHTML = "";
+
+        if (!query) {
+          if (onSelectCallback) onSelectCallback(null);
+          return;
+        }
+
+        const results = await geocode(query, layersFilter);
+        results.forEach(place => {
+          const item = document.createElement('div');
+          item.textContent = place.properties.label;
+          item.addEventListener('click', () => {
+            input.value = place.properties.label;
+            suggestionBox.innerHTML = "";
+            const coords = place.geometry.coordinates.reverse();
+            setCoordsCallback(coords);
+            if (onSelectCallback) onSelectCallback(place.properties.label);
+          });
+          suggestionBox.appendChild(item);
+        });
+      });
+
+      document.addEventListener('click', e => {
+        if (e.target !== input) suggestionBox.innerHTML = "";
+      });
+    }
+
+    // ✅ Autocomplete villes
+    setupAutocomplete("startCity", "startCity-suggestions", coords => {
+      startCityCoords = coords;
+      selectedStartCity = document.getElementById("startCity").value;
+      startAddressCoords = null;
+      document.getElementById("startAddress").disabled = false;
+      document.getElementById("startAddress").value = "";
+    }, ["locality", "city", "municipality"]);
+
+    setupAutocomplete("endCity", "endCity-suggestions", coords => {
+      endCityCoords = coords;
+      selectedEndCity = document.getElementById("endCity").value;
+      endAddressCoords = null;
+      document.getElementById("endAddress").disabled = false;
+      document.getElementById("endAddress").value = "";
+    }, ["locality", "city", "municipality"]);
+
+    // ✅ Autocomplete adresses avec ville fixée
+    function geocodeAddressInCity(query, city) {
+      if (!query || !city) return Promise.resolve([]);
+      const fullQuery = query + ", " + city;
+      return geocode(fullQuery, ["address", "street", "venue"]);
+    }
+
+    function setupAutocompleteAddress(inputId, suggestionBoxId, setCoordsCallback, getCityName) {
+      const input = document.getElementById(inputId);
+      const suggestionBox = document.getElementById(suggestionBoxId);
+
+      input.addEventListener('input', async () => {
+        const query = input.value.trim();
+        suggestionBox.innerHTML = "";
+        if (query.length < 1) return;
+
+        const city = getCityName();
+        if (!city) return;
+
+        const results = await geocodeAddressInCity(query, city);
+        results.forEach(place => {
+          const item = document.createElement('div');
+          item.textContent = place.properties.label;
+          item.addEventListener('click', () => {
+            input.value = place.properties.label;
+            suggestionBox.innerHTML = "";
+            const coords = place.geometry.coordinates.reverse();
+            setCoordsCallback(coords);
+          });
+          suggestionBox.appendChild(item);
+        });
+      });
+
+      document.addEventListener('click', e => {
+        if (e.target !== input) suggestionBox.innerHTML = "";
+      });
+    }
+
+    setupAutocompleteAddress("startAddress", "startAddress-suggestions", coords => startAddressCoords = coords, () => selectedStartCity);
+    setupAutocompleteAddress("endAddress", "endAddress-suggestions", coords => endAddressCoords = coords, () => selectedEndCity);
+
+    async function calculateRoute() {
+      if (!startCityCoords || !endCityCoords) {
+        alert("Veuillez sélectionner une ville de départ ET une ville d'arrivée via la liste de suggestions.");
+        return;
+      }
+
+      try {
+        const bodyData = {
+          coordinates: [
+            [startCityCoords[1], startCityCoords[0]],
+            [endCityCoords[1], endCityCoords[0]]
+          ]
+        };
+
+        const response = await fetch("https://api.openrouteservice.org/v2/directions/driving-car/geojson", {
+          method: "POST",
+          headers: {
+            "Authorization": apiKey,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(bodyData)
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          alert("Erreur API ORS : " + (data.error?.message || "Erreur inconnue"));
+          return;
+        }
+
+        routeLayers.forEach(layer => map.removeLayer(layer));
+        routeLayers = [];
+
+        const layer = L.geoJSON(data.features[0], {
+          style: { color: "blue", weight: 6 }
+        }).addTo(map);
+        routeLayers.push(layer);
+        map.fitBounds(layer.getBounds());
+
+        const summary = data.features[0].properties.summary;
+        const distanceKm = Math.round(summary.distance / 1000);
+        const durationMin = Math.round(summary.duration / 60);
+        const co2Kg = Math.round((summary.distance / 1000) * 0.12);
+
+        document.getElementById("infos").innerHTML = `
+          🕓 Temps estimé : ${Math.floor(durationMin / 60)}h ${durationMin % 60} min<br>
+          📏 Distance : ${distanceKm} km<br>
+          🌱 CO₂ estimé : ${co2Kg} kg
+        `;
+
+        const mainRoadRegex = /^(A\s*\d+|RN\s*\d+|D\s*\d+)/;
+        const routeNames = new Set();
+        data.features[0].properties.segments.forEach(segment => {
+          segment.steps.forEach(step => {
+            if (step.name && mainRoadRegex.test(step.name.trim())) {
+              routeNames.add(step.name.trim());
+            }
+          });
+        });
+
+        document.getElementById("routesUsed").innerText =
+          "Routes principales utilisées : " + Array.from(routeNames).join(", ");
+
+      } catch (err) {
+        alert("Erreur réseau ou API : " + err.message);
+      }
+    }
+  </script>
+</body>
+</html>

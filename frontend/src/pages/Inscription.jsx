@@ -1,0 +1,81 @@
+import React, { useState } from 'react';
+import { checkPasswordSecurity } from '../utils/passwordCheck';
+
+export default function Inscription() {
+  const [pseudo, setPseudo] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [securityMessage, setSecurityMessage] = useState('');
+  const [securityColor, setSecurityColor] = useState('');
+
+  const handlePasswordChange = (value) => {
+    setPassword(value);
+
+    const { message, color } = checkPasswordSecurity(value);
+    setSecurityMessage(message);
+    setSecurityColor(color);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch('https://127.0.0.1:8000/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, pseudo, role_id: 2, privilege_id: 3 }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setMessage("Inscription réussie !");
+        setError('');
+      } else {
+        setError(data.message || "Une erreur est survenue. Le mail ou le pseudo est déjà utilisé.");
+        setMessage('');
+      }
+    } catch (err) {
+	  setError("Erreur serveur");
+      setMessage('');
+    }
+  };
+
+  return (
+    <div className="container">
+      <h2>Inscription</h2>
+
+      {error && <div className="alert alert-danger">{error}</div>}
+      {message && <div className="alert alert-success">{message}</div>}
+
+      <form onSubmit={handleSubmit}>
+        <div className="mb-3">
+          <label htmlFor="pseudo" className="form-label">Pseudo :</label>
+          <input type="text" className="form-control" id="pseudo" value={pseudo} onChange={e => setPseudo(e.target.value)} required />
+        </div>
+
+        <div className="mb-3">
+          <label htmlFor="email" className="form-label">Email :</label>
+          <input type="email" className="form-control" id="email" value={email} onChange={e => setEmail(e.target.value)} required />
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="password" className="form-label">Mot de passe :</label>
+          <input
+            type="password"
+            className="form-control"
+            id="password"
+            value={password}
+            onChange={e => handlePasswordChange(e.target.value)}
+            required
+          />
+          {securityMessage && <small className={`form-text ${securityColor}`}>{securityMessage}</small>}
+        </div>
+
+        <button type="submit" className="btn btn-success w-25">S'inscrire</button>
+      </form>
+    </div>
+  );
+}

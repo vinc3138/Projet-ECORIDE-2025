@@ -1,0 +1,91 @@
+import React, { useState } from 'react';
+import { checkPasswordSecurity } from '../utils/passwordCheck';
+import { useAuth } from '../context/authToken';
+import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+
+
+export default function Connexion() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [securityMessage, setSecurityMessage] = useState('');
+  const [securityColor, setSecurityColor] = useState('');
+
+  // Fonction login depuis le contexte Auth
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+
+    const { message, color } = checkPasswordSecurity(value);
+    setSecurityMessage(message);
+    setSecurityColor(color);
+  };
+
+  const handleConnexion = async (e) => {
+    e.preventDefault();
+
+    try {
+      await login(email, password);
+
+      setMessage('Connexion réussie !');
+      setError('');
+      navigate('/');
+
+    } catch (err) {
+      console.error('Erreur lors de la connexion :', err);
+      setError('Identifiants invalides ou erreur de connexion.');
+      setMessage('');
+    }
+  };
+
+  return (
+    <div className="container">
+      <h2>Connexion</h2>
+
+      {message && <div className="alert alert-success">{message}</div>}
+      {error && <div className="alert alert-danger">{error}</div>}
+
+      <form onSubmit={handleConnexion}>
+        <div className="mb-3">
+          <label htmlFor="email" className="form-label">Email :</label>
+          <input
+            type="email"
+            className="form-control"
+            id="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="mb-3">
+          <label htmlFor="password" className="form-label">Mot de passe :</label>
+          <input
+            type="password"
+            className="form-control"
+            id="password"
+            value={password}
+            onChange={handlePasswordChange}
+            required
+          />
+          {securityMessage && (
+            <small className={`form-text ${securityColor}`}>
+              {securityMessage}
+            </small>
+          )}
+        </div>
+
+        <button type="submit" className="btn btn-success">Se connecter</button>
+      </form>
+
+		<div className="btn btn-link btn-sm">
+		  <Link to="/reset_password">Mot de passe oublié ?</Link>
+		</div>
+    </div>
+  );
+}

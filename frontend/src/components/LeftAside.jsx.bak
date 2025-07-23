@@ -1,0 +1,17 @@
+import React from "react";
+import imageSrc from "/Pictures/PICTURE_BANDEAU_LATERAL.jpg";
+
+export default function LeftAside() {
+  return (
+    <aside className="bandeau">
+      <img
+        src={imageSrc}
+        alt="Bandeau latéral"
+  style={{
+    objectFit: 'cover',        // garde les proportions, remplit le cadre
+    objectPosition: 'left'    // décale la partie visible vers la droite
+  }}
+      />
+    </aside>
+  );
+}

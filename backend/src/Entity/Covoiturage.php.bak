@@ -1,0 +1,294 @@
+<?php
+
+namespace App\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use App\Repository\CovoiturageRepository;
+
+#[ORM\Entity(repositoryClass: CovoiturageRepository::class)]
+#[ORM\Table(name: 'covoiturage')]
+class Covoiturage
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(name: 'covoiturage_id', type: 'integer')]
+    private ?int $covoiturage_id = null;
+
+    #[ORM\Column(name: 'date_creation', type: 'datetime', nullable: true, options: ["default" => "CURRENT_TIMESTAMP"])]
+    private ?\DateTimeInterface $dateCreation = null;
+
+    #[ORM\Column(name: 'date_depart', type: 'date')]
+    private ?\DateTimeInterface $dateDepart = null;
+
+    #[ORM\Column(name: 'heure_depart', type: 'time')]
+    private ?\DateTimeInterface $heureDepart = null;
+
+    #[ORM\Column(name: 'date_debut', type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $dateDebut = null;
+
+    #[ORM\Column(name: 'ville_depart', length: 50)]
+    private ?string $villeDepart = null;
+
+    #[ORM\Column(name: 'adresse_depart', length: 50, options: ["default" => ""])]
+    private ?string $adresseDepart = '';
+
+    #[ORM\Column(name: 'adresse_arrivee', length: 50, options: ["default" => ""])]
+    private ?string $adresseArrivee = '';
+
+    #[ORM\Column(name: 'date_arrivee', type: 'date')]
+    private ?\DateTimeInterface $dateArrivee = null;
+
+    #[ORM\Column(name: 'heure_arrivee', type: 'time')]
+    private ?\DateTimeInterface $heureArrivee = null;
+
+    #[ORM\Column(name: 'date_fin', type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $dateFin = null;
+
+    #[ORM\Column(name: 'ville_arrivee', length: 50)]
+    private ?string $villeArrivee = null;
+
+    #[ORM\Column(name: 'duree_trajet', type: 'time', options: ["default" => "00:00:00"])]
+    private ?\DateTimeInterface $dureeTrajet = null;
+
+    #[ORM\Column(name: 'nb_place', type: 'integer', options: ["default" => 0])]
+    private ?int $nbPlace = 0;
+
+    #[ORM\Column(name: 'prix_passager', type: 'float', options: ["default" => 0])]
+    private ?float $prixPassager = 0;
+
+    #[ORM\ManyToOne(targetEntity: Utilisateur::class)]
+    #[ORM\JoinColumn(name: 'chauffeur_id', referencedColumnName: 'utilisateur_id', nullable: false)]
+    private ?Utilisateur $chauffeur = null;
+
+    #[ORM\ManyToOne(targetEntity: Voiture::class)]
+    #[ORM\JoinColumn(name: 'voiture_id', referencedColumnName: 'voiture_id', nullable: false)]
+    private ?Voiture $voiture = null;
+
+	#[ORM\ManyToOne(targetEntity: StatutCovoiturage::class)]
+	#[ORM\JoinColumn(name: 'statut_trajet_id', referencedColumnName: 'statut_covoiturage_id', nullable: false)]
+	private ?StatutCovoiturage $statutCovoiturage = null;
+
+    #[ORM\Column(name: 'est_ecologique', type: 'boolean', options: ["default" => false])]
+    private bool $estEcologique = false;
+
+    #[ORM\Column(name: 'distance_trajet', type: 'integer', options: ["default" => 0])]
+    private ?int $distanceTrajet = 0;
+
+    public function getCovoiturageId(): ?int
+    {
+        return $this->covoiturage_id;
+    }
+
+    public function getDateCreation(): ?\DateTimeInterface
+    {
+        return $this->dateCreation;
+    }
+
+    public function setDateCreation(?\DateTimeInterface $dateCreation): self
+    {
+        $this->dateCreation = $dateCreation;
+        return $this;
+    }
+
+    public function getDateDepart(): ?\DateTimeInterface
+    {
+        return $this->dateDepart;
+    }
+
+    public function setDateDepart(\DateTimeInterface $dateDepart): self
+    {
+        $this->dateDepart = $dateDepart;
+        return $this;
+    }
+
+    public function getHeureDepart(): ?\DateTimeInterface
+    {
+        return $this->heureDepart;
+    }
+
+    public function setHeureDepart(\DateTimeInterface $heureDepart): self
+    {
+        $this->heureDepart = $heureDepart;
+        return $this;
+    }
+
+    public function getDateDebut(): ?\DateTimeInterface
+    {
+        return $this->dateDebut;
+    }
+
+    public function setDateDebut(?\DateTimeInterface $dateDebut): self
+    {
+        $this->dateDebut = $dateDebut;
+        return $this;
+    }
+
+    public function getVilleDepart(): ?string
+    {
+        return $this->villeDepart;
+    }
+
+    public function setVilleDepart(string $villeDepart): self
+    {
+        $this->villeDepart = $villeDepart;
+        return $this;
+    }
+
+    public function getAdresseDepart(): ?string
+    {
+        return $this->adresseDepart;
+    }
+
+    public function setAdresseDepart(string $adresseDepart): self
+    {
+        $this->adresseDepart = $adresseDepart;
+        return $this;
+    }
+
+    public function getDateArrivee(): ?\DateTimeInterface
+    {
+        return $this->dateArrivee;
+    }
+
+    public function setDateArrivee(\DateTimeInterface $dateArrivee): self
+    {
+        $this->dateArrivee = $dateArrivee;
+        return $this;
+    }
+
+    public function getAdresseArrivee(): ?string
+    {
+        return $this->adresseArrivee;
+    }
+
+    public function setAdresseArrivee(string $adresseArrivee): self
+    {
+        $this->adresseArrivee = $adresseArrivee;
+        return $this;
+    }
+
+    public function getHeureArrivee(): ?\DateTimeInterface
+    {
+        return $this->heureArrivee;
+    }
+
+    public function setHeureArrivee(\DateTimeInterface $heureArrivee): self
+    {
+        $this->heureArrivee = $heureArrivee;
+        return $this;
+    }
+
+    public function getDateFin(): ?\DateTimeInterface
+    {
+        return $this->dateFin;
+    }
+
+    public function setDateFin(?\DateTimeInterface $dateFin): self
+    {
+        $this->dateFin = $dateFin;
+        return $this;
+    }
+
+    public function getVilleArrivee(): ?string
+    {
+        return $this->villeArrivee;
+    }
+
+    public function setVilleArrivee(string $villeArrivee): self
+    {
+        $this->villeArrivee = $villeArrivee;
+        return $this;
+    }
+
+	public function getDureeTrajet(): ?string
+	{
+		if ($this->dureeTrajet === null) {
+			return null;
+		}
+		//return $this->dureeTrajet->format('H:i');	// Format "03:15"
+		return $this->dureeTrajet->format('H\hi');  // Format "03h15"
+	}
+
+    public function setDureeTrajet(\DateTimeInterface $dureeTrajet): self
+    {
+        $this->dureeTrajet = $dureeTrajet;
+        return $this;
+    }
+
+    public function getNbPlace(): ?int
+    {
+        return $this->nbPlace;
+    }
+
+    public function setNbPlace(int $nbPlace): self
+    {
+        $this->nbPlace = $nbPlace;
+        return $this;
+    }
+
+    public function getPrixPassager(): ?float
+    {
+        return $this->prixPassager;
+    }
+
+    public function setPrixPassager(float $prixPassager): self
+    {
+        $this->prixPassager = $prixPassager;
+        return $this;
+    }
+
+    public function getChauffeur(): ?Utilisateur
+    {
+        return $this->chauffeur;
+    }
+
+    public function setChauffeur(Utilisateur $chauffeur): self
+    {
+        $this->chauffeur = $chauffeur;
+        return $this;
+    }
+
+    public function getVoiture(): ?Voiture
+    {
+        return $this->voiture;
+    }
+
+    public function setVoiture(Voiture $voiture): self
+    {
+        $this->voiture = $voiture;
+        return $this;
+    }
+
+    public function getStatutCovoiturage(): ?StatutCovoiturage
+    {
+        return $this->statutCovoiturage;
+    }
+
+    public function setStatutCovoiturage(?StatutCovoiturage $statutCovoiturage): self
+    {
+        $this->statutCovoiturage = $statutCovoiturage;
+        return $this;
+    }
+
+    public function getEstEcologique(): bool
+    {
+        return $this->estEcologique;
+    }
+
+    public function setEstEcologique(bool $estEcologique): self
+    {
+        $this->estEcologique = $estEcologique;
+        return $this;
+    }
+
+    public function getDistanceTrajet(): ?int
+    {
+        return $this->distanceTrajet;
+    }
+
+    public function setDistanceTrajet(?int $distanceTrajet): self
+    {
+        $this->distanceTrajet = $distanceTrajet;
+        return $this;
+    }
+}

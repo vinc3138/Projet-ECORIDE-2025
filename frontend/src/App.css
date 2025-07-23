@@ -1,0 +1,275 @@
+/* *********************************************************************************************************************** */
+
+/* ******* BOUTONS ********/
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+/* ******* BOUTONS - Survol ********/
+button:hover {
+  border-color: #646cff;
+}
+
+/* ******* BOUTONS - Focus ********/
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* ******* BOUTONS - Centré ********/
+.centered-button {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+/* *********************************************************************************************************************** */
+
+/* ******* LISTE & COLONNES ********/
+.column {
+	float: left;
+	width: 33.33%;
+	padding: 5px;
+  }
+
+/* Clearfix (clear floats) */
+.row::after {
+	content: "";
+	clear: both;
+	display: table;
+}
+
+.list-group-item {
+	border: 1px solid #ccc;        /* fine bordure grise */
+	border-radius: 5px;            /* coins arrondis */
+	padding: 5px;                 /* espace intérieur */
+	margin-bottom: 5px;           /* espace entre les lignes */
+	background-color: #f9f9f9;     /* fond légèrement coloré */
+	box-shadow: 1px 1px 5px rgba(0,0,0,0.05); /* ombrage léger */
+  }
+
+/* *********************************************************************************************************************** */
+
+/* ******* IMAGES ********/
+
+.image-wrapper {
+	position: relative;
+	text-align: center;
+  }
+
+/* ******* IMAGES - Page d'accueil ********/
+.picture_style_01 {
+	height: 15em;
+	width: 95%;
+	margin: auto;
+	opacity: 0.3; 				/* transparence */
+	object-fit: cover;
+	border-radius: 15px;
+}
+
+/* ******* IMAGES - Page A propos ********/
+.picture_style_02 {
+	height: auto;
+	width: auto;
+	margin: auto;
+	opacity: 0.3; 				/* transparence */
+	object-fit: cover;
+	border-radius: 15px;
+}
+
+/* ******* IMAGES - Page xxx ********/
+.picture_style_03 {
+	height: 200px;
+	width: 200px;
+	margin: auto;
+	opacity: 1;
+	object-fit: cover;
+	border-radius: 5px;
+}
+
+  /* ******* IMAGE ZOOMABLE - Avant zoom ********/
+.zoomable {
+	transition: transform 0.3s ease, opacity 0.3s ease;
+	cursor: zoom-in;
+	max-width: 100%;
+	height: auto;
+	display: block;
+	margin: 10px auto;
+	opacity: 0.25;
+}
+
+/* ******* IMAGE ZOOMABLE - Zoomée ********/
+.zoomed {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1); 		/* Zoom + centrage */
+  cursor: zoom-out;
+  z-index: 9999;
+  opacity: 1;
+  max-width: 90vw;
+  max-height: 90vh;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  border-radius: 10px;
+}
+
+/* *********************************************************************************************************************** */
+
+/* ******* TEXTE ********/
+.texte_01 {
+	box-sizing: border-box;
+	border-radius: 20px;
+	height: auto;
+	color: green;
+	text-align: center;
+}
+
+/* *********************************************************************************************************************** */
+
+/* ******* BALISES ********/
+
+/* ******* Toutes balises ********/
+*   {
+	box-sizing: border-box;		/* Permet de prendre en compte la bordure et le padding dans la largeur totale */
+	/* height: auto;			/* Permet de prendre en compte la hauteur totale */				
+}
+
+/* ******* LIENS ********/
+a {
+  font-weight: 500;
+  color: #000000;
+  text-decoration: inherit;
+}
+
+/* ******* LIENS - Survol ********/
+a:hover {
+  color: #535bf2;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+nav ul li
+{
+ margin:0 10px; 
+}
+
+input[type=text] {
+	min-width: 207px;
+}
+
+input[type=date] {
+	min-width: 207px;
+}
+
+.input_long {
+	width: 420px;
+}
+
+/* *********************************************************************************************************************** */
+
+/* ******* AUTRES ********/
+
+.card {
+  border-radius: 30px !important;
+  overflow: hidden !important;
+}
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  /*background-color: #242424;*/
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+/* *********************************************************************************************************************** */
+
+/* ******* HEADER & NAVBAR ********/
+
+/* Conserve la largeur centrée */
+.wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Header global */
+.site-header {
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ccc;
+  padding: 0.5rem 0;
+}
+
+/* Flex horizontal */
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Logo + titre */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Logo */
+.logo_display {
+  width: 100px;
+  height: 50px;
+  
+}
+
+.site-title {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.user-info {
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+

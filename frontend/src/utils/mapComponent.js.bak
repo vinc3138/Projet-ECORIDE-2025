@@ -1,0 +1,31 @@
+import React, { useEffect } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+const MapComponent = () => {
+  useEffect(() => {
+    const apiKey = "5b3ce3597851110001cf62483d42dd8e7c144183b22a1e4f3d4e1279";
+
+    const map = L.map('map').setView([48.8566, 2.3522], 6);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+    }).addTo(map);
+
+    // Ici tu peux intégrer tout ton code API OpenRouteService (geocode, calculateRoute, etc.)
+    // Tu peux aussi faire passer des props à ce composant si tu veux interagir avec ton formulaire (ex: coords)
+
+    return () => {
+      map.remove();
+    };
+  }, []);
+
+  return (
+    <>
+      <div id="map" style={{ height: '300px', width: '100%', marginBottom: '1rem' }}></div>
+      <div id="infos" className="mb-2 small text-muted"></div>
+      <div id="routesUsed" className="mb-2 small text-muted"></div>
+    </>
+  );
+};
+
+export default MapComponent;

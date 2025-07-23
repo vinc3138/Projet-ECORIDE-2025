@@ -1,0 +1,14 @@
+import React from "react";
+import imageSrc from "../assets/your-image.jpg"; // remplace avec le bon chemin
+
+export default function LeftAsideImage() {
+  return (
+    <aside className="d-none d-md-block position-fixed top-0 start-0 h-100 bg-light">
+      <img
+        src={imageSrc}
+        alt="Visuel"
+        style={{ height: "100vh", objectFit: "cover" }}
+      />
+    </aside>
+  );
+}

@@ -1,0 +1,45 @@
+import React, { createContext, useState, useContext } from 'react';
+
+const AuthContext = createContext();
+
+function AuthProvider(props) {
+  const [user, setUser] = useState(null);
+
+  const login = async (email, password) => {
+    const res = await fetch('https://127.0.0.1:8000/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!res.ok) {
+      throw new Error('Échec de la connexion');
+    }
+
+    const data = await res.json();
+
+    localStorage.setItem('jwt_token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+
+    setUser(data.user);
+  };
+
+  const logout = () => {
+    localStorage.removeItem('jwt_token');
+    localStorage.removeItem('user');
+    setUser(null);
+  };
+
+  return React.createElement(
+    AuthContext.Provider,
+    { value: { user, login, logout } },
+    props.children
+  );
+}
+
+// Hook personnalisé pour utiliser le contexte Auth plus facilement
+function useAuth() {
+  return useContext(AuthContext);
+}
+
+export { AuthContext, AuthProvider, useAuth };
