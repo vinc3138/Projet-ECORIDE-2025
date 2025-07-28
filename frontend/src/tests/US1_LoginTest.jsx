@@ -10,7 +10,7 @@ export default function ConnexionTester() {
 
 	  const validUsers = [
 		{ email: 'test@example.com', password: 'securePassword123' },
-		{ email: 'passagerchauffeur@passagerchauffeur.com', password: 'STUDi2025!' },
+		{ email: 'xxxxx@xxxxxx.com', password: 'Sxxxxxxxxxxxx' },
 	  ];
 
 	  const found = validUsers.find(u => u.email === email && u.password === password);
