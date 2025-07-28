@@ -14,6 +14,7 @@
         "doctrine/doctrine-bundle": "^2.15",
         "doctrine/doctrine-fixtures-bundle": "^4.1",
         "doctrine/doctrine-migrations-bundle": "^3.4",
+        "doctrine/mongodb-odm-bundle": "^5.3",
         "doctrine/orm": "^3.4",
         "lexik/jwt-authentication-bundle": "^3.1",
         "nelmio/cors-bundle": "*",
@@ -35,8 +36,7 @@
         "symfony/serializer": "7.3.*",
         "symfony/twig-bundle": "7.3.*",
         "symfony/validator": "7.3.*",
-        "symfony/yaml": "7.3.*",
-        "symfonycasts/reset-password-bundle": "^1.23"
+        "symfony/yaml": "7.3.*"
     },
     "config": {
         "allow-plugins": {
@@ -90,7 +90,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "*",
-        "symfony/maker-bundle": "^1.63",
+        "symfony/maker-bundle": "^1.64",
         "symfony/web-profiler-bundle": "7.3.*"
     }
 }

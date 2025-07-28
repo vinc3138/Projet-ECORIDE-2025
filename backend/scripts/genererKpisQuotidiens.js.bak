@@ -1,0 +1,64 @@
+const { MongoClient } = require('mongodb');
+const uri = 'mongodb+srv://administrateur:STUDI2025!@cluster0.ygqxdsj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';  
+const client = new MongoClient(uri);
+
+async function genererKpisQuotidiens() {
+  try {
+    await client.connect();
+    const db = client.db('plateforme_covoiturage');
+    const rides = db.collection('covoiturages');
+    const dailyKpis = db.collection('kpi_journalier');
+
+    const pipeline = [
+      {
+        $match: {
+          date_depart: { $exists: true, $ne: null }
+        }
+      },
+      {
+        $addFields: {
+          dateObj: {
+            $cond: [
+              { $eq: [ { $type: "$date_depart" }, "string" ] },
+              { $toDate: "$date_depart" },
+              "$date_depart"
+            ]
+          }
+        }
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$dateObj" } },
+          nb_covoiturages: { $sum: 1 },
+          credits_gagnes: { $sum: 2 } // 2 crédits par covoiturage
+        }
+      }
+    ];
+
+    const aggResult = await rides.aggregate(pipeline).toArray();
+
+    // Supprimer tous les anciens KPI
+    await dailyKpis.deleteMany({});
+    console.log("Tous les anciens KPI ont été supprimés.");
+
+    // Insérer les nouveaux KPI
+    for (const day of aggResult) {
+      await dailyKpis.updateOne(
+        { date: day._id },
+        {
+          $set: {
+            date: day._id,
+            nb_covoiturages: day.nb_covoiturages,
+            credits_gagnes: day.credits_gagnes,
+          },
+        },
+        { upsert: true }
+      );
+      console.log(`KPI mis à jour pour le ${day._id}`);
+    }
+  } finally {
+    await client.close();
+  }
+}
+
+module.exports = { genererKpisQuotidiens };

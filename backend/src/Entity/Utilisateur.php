@@ -37,6 +37,16 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(name: "photo", type: "blob", nullable: true, options: ["length" => 4294967295])]
     private $photo;
 
+    #[ORM\Column(name: "date_inscription", type: "datetime")]
+    private \DateTimeInterface $dateInscription;
+
+    // Initialisation des collections et date d'inscription dans le constructeur
+    public function __construct()
+    {
+        $this->dateInscription = new \DateTimeImmutable();
+        $this->utilisateurPreferences = new ArrayCollection();
+    }
+
     #[ORM\Column(name: "prenom", type: "string", length: 100)]
     private ?string $prenom = null;
 
@@ -92,6 +102,11 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getDateInscription(): \DateTimeInterface
+    {
+        return $this->dateInscription;
+    }
+
     public function getPseudo(): string
     {
         return $this->pseudo;
@@ -125,37 +140,37 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-	public function getPhoto(): ?string 
-	{
-		if ($this->photo === null) {
-			return null;
-		}
+    public function getPhoto(): ?string 
+    {
+        if ($this->photo === null) {
+            return null;
+        }
 
-		// Si c'est une ressource (stream)
-		if (is_resource($this->photo)) {
-			$contents = stream_get_contents($this->photo);
-			if ($contents === false) {
-				return null;
-			}
+        // Si c'est une ressource (stream)
+        if (is_resource($this->photo)) {
+            $contents = stream_get_contents($this->photo);
+            if ($contents === false) {
+                return null;
+            }
 
-			$finfo = new \finfo(FILEINFO_MIME_TYPE);
-			$mimeType = $finfo->buffer($contents);
+            $finfo = new \finfo(FILEINFO_MIME_TYPE);
+            $mimeType = $finfo->buffer($contents);
 
-			if (strpos($mimeType, 'image/') === 0) {
-				$base64 = base64_encode($contents);
-				return 'data:' . $mimeType . ';base64,' . $base64;
-			}
+            if (strpos($mimeType, 'image/') === 0) {
+                $base64 = base64_encode($contents);
+                return 'data:' . $mimeType . ';base64,' . $base64;
+            }
 
-			return null;
-		}
+            return null;
+        }
 
-		// Sinon, si c'est une chaîne (chemin/URL)
-		if (is_string($this->photo) && strlen($this->photo) > 0) {
-			return $this->photo;
-		}
+        // Sinon, si c'est une chaîne (chemin/URL)
+        if (is_string($this->photo) && strlen($this->photo) > 0) {
+            return $this->photo;
+        }
 
-		return null;
-	}
+        return null;
+    }
 
     public function setPhoto($photo): self
     {
@@ -247,28 +262,17 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return ['ROLE_USER'];
     }
 
-	#[\Deprecated]
-	public function eraseCredentials(): void
-	{
-		// méthode vide ou la logique déplacée ailleurs
-	}
-
-
-
-
+    #[\Deprecated]
+    public function eraseCredentials(): void
+    {
+        // méthode vide ou la logique déplacée ailleurs
+    }
 
     #[ORM\OneToMany(mappedBy: 'utilisateur', targetEntity: PreferenceUtilisateur::class)]
     private Collection $utilisateurPreferences;
-
-    public function __construct()
-    {
-        $this->utilisateurPreferences = new ArrayCollection();
-    }
 
     public function getUtilisateurPreferences(): Collection
     {
         return $this->utilisateurPreferences;
     }	
-	
-	
 }

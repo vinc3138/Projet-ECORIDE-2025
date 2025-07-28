@@ -1,0 +1,78 @@
+// src/context/AuthContext.jsx
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from "react-router-dom";
+
+const AuthContext = createContext();
+
+export const useAuth = () => useContext(AuthContext);
+
+export const AuthProvider = ({ children }) => {
+  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [sessionExpired, setSessionExpired] = useState(false);
+  const navigate = useNavigate();
+
+  // Vérifie l'expiration du token au montage
+  useEffect(() => {
+    if (token) {
+      try {
+        const decoded = jwt_decode(token);
+        const now = Date.now() / 1000;
+        if (decoded.exp < now) {
+          handleLogout("Votre session a expiré.");
+        }
+      } catch (e) {
+        console.error("Token invalide :", e);
+        handleLogout("Erreur d'authentification.");
+      }
+    }
+  }, [token]);
+
+  // Déconnexion centralisée
+  const handleLogout = (message) => {
+    localStorage.removeItem("token");
+    setToken(null);
+    setSessionExpired(true);
+    setTimeout(() => {
+      setSessionExpired(false);
+      navigate("/login");
+    }, 3000);
+    if (message) alert(message);
+  };
+
+  // Fetch avec auth et gestion auto des 401
+  const secureFetch = async (url, options = {}) => {
+    const headers = {
+      ...options.headers,
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
+
+    const res = await fetch(url, { ...options, headers });
+
+    if (res.status === 401) {
+      handleLogout("Votre session a expiré.");
+      throw new Error("Non autorisé");
+    }
+
+    return res;
+  };
+
+  const value = {
+    token,
+    setToken,
+    logout: handleLogout,
+    secureFetch,
+  };
+
+  return (
+    <AuthContext.Provider value={value}>
+      {sessionExpired && (
+        <div className="alert alert-warning text-center m-0 rounded-0">
+          Votre session a expiré. Redirection vers la page de connexion...
+        </div>
+      )}
+      {children}
+    </AuthContext.Provider>
+  );
+};

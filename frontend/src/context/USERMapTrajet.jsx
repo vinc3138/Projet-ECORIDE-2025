@@ -1,0 +1,90 @@
+import React, { useEffect, useRef } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+	const MapComponent = ({
+	  departCity,
+	  departAddress,
+	  arriveeCity,
+	  arriveeAddress,
+	  setDuree,
+	  setDistance
+	}) => {
+	  const mapRef = useRef(null);
+	  const routeLayerRef = useRef(null);
+
+	useEffect(() => {
+	if (!mapRef.current) {
+	  mapRef.current = L.map('map').setView([48.8566, 2.3522], 6);
+	  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+		attribution: '© OpenStreetMap contributors',
+	  }).addTo(mapRef.current);
+	}
+	}, []);
+
+	// Arrondi des distance à 5km
+	const roundToNearestFive = (num) => {
+	  return Math.round(num / 5) * 5;
+	};
+
+  useEffect(() => {
+    if (!departCity || !arriveeCity ) return;
+
+    const apiKey = '5b3ce3597851110001cf62483d42dd8e7c144183b22a1e4f3d4e1279';
+
+	const geocode = async (city) => {
+	  const response = await fetch(`https://api.openrouteservice.org/geocode/search?api_key=${apiKey}&text=${encodeURIComponent(city)}`);
+	  const data = await response.json();
+	  if (data.features && data.features.length > 0) {
+		return data.features[0].geometry.coordinates;
+	  }
+	  throw new Error('Ville non trouvée');
+	};
+
+    const fetchRoute = async () => {
+      try {
+		const startCoords = await geocode(departCity);
+		const endCoords = await geocode(arriveeCity);
+
+        if (routeLayerRef.current) {
+          routeLayerRef.current.remove();
+        }
+
+        const routeResponse = await fetch('https://api.openrouteservice.org/v2/directions/driving-car/geojson', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': apiKey,
+          },
+          body: JSON.stringify({
+            coordinates: [startCoords, endCoords],
+          }),
+        });
+
+        const routeData = await routeResponse.json();
+
+        routeLayerRef.current = L.geoJSON(routeData).addTo(mapRef.current);
+        mapRef.current.fitBounds(routeLayerRef.current.getBounds());
+
+        const summary = routeData.features[0].properties.summary;
+        const distanceKmRaw = (summary.distance / 1000).toFixed(2);
+		const distanceKmRounded = roundToNearestFive(distanceKmRaw);
+        const durationMinRaw = (summary.duration / 60).toFixed(0);
+		const durationMinRounded = roundToNearestFive(durationMinRaw);
+		
+		setDistance(distanceKmRounded);
+        setDuree(durationMinRounded);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchRoute();
+  }, [departCity, arriveeCity]);
+
+  return (
+    <div id="map" style={{ height: '300px', width: '100%', marginBottom: '1rem' }}></div>
+  );
+};
+
+export default MapComponent;

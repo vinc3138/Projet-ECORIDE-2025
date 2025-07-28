@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Service\MailService;
+
 
 class RegistrationController extends AbstractController
 {
@@ -16,7 +18,8 @@ class RegistrationController extends AbstractController
     public function register(
         Request $request,
         EntityManagerInterface $entityManager,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
+		MailService $mailService
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
 		
@@ -46,8 +49,39 @@ class RegistrationController extends AbstractController
         $hashedPassword = $passwordHasher->hashPassword($user, $data['password']);
         $user->setPassword($hashedPassword);
 
+        // Création du profil utilisateur dans la BDD
         $entityManager->persist($user);
         $entityManager->flush();
+
+		// Envoi du mail de confirmation
+        $mailService->send(
+            $user->getEmail(),
+            "Confirmation de création de votre compte Ecoride",
+            sprintf("Bonjour %s,
+
+Votre profil a bien été crée dans l'application Ecoride.
+
+🗓 Date de création : %s
+🪪 Pseudo : %s
+📩 Adresse email : %s
+
+Votre mot de passe n'est pas communiqué par raison de sécurité.
+En cas d'oubli de vos identifiants, cliquer sur 'Mot de passe oublié' dans la page de connexion.
+
+Vous pouvez désormais utiliser la totalité des fonctionnalités de l'application et également compléter votre profil dans l'onglet 'Compte Utilisateur'.
+
+Merci pour votre confiance et bon trajet !
+
+L’équipe EcoRide",
+
+                $user->getPseudo(),
+                (new \DateTimeImmutable())->format('d/m/Y'),
+                $user->getPseudo(),
+                $user->getEmail()
+            )
+        );
+
+
 
         return new JsonResponse(['message' => 'Utilisateur créé avec succès'], 201);
     }

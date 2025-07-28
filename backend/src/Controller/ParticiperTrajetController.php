@@ -68,13 +68,14 @@ class ParticiperTrajetController extends AbstractController
         $reservation->setAvisRedige(0);
         $reservation->setNoteEnvoye(0);
 
-        // Mise à jour des places disponibles et crédit utilisateur
+        // Mise à jour des places disponibles et crédit utilisateur dans la BDD
         $trajet->setNbPlace($trajet->getNbPlace() - 1);
         $user->setCredit($user->getCredit() - $prix);
 
         $em->persist($reservation);
         $em->flush();
 
+		// Envoi du mail de confirmation
         $mailService->send(
             $user->getEmail(),
             "Confirmation de réservation & Facturation - Covoiturage",

@@ -60,6 +60,7 @@ class USERCreerTrajetController extends AbstractController
 
             // Création du trajet
             $trajet = new Covoiturage();
+			
             $trajet->setVilleDepart($data['depart']);
             $trajet->setAdresseDepart($data['adresse_depart']);
             $trajet->setVilleArrivee($data['destination']);
@@ -68,19 +69,61 @@ class USERCreerTrajetController extends AbstractController
             $trajet->setHeureDepart(new \DateTime($data['heure_depart']));
             $trajet->setDateArrivee(new \DateTime($data['date_arrivee']));
             $trajet->setHeureArrivee(new \DateTime($data['heure_arrivee']));
-            $trajet->setNbPlace($data['places']);
+
             $trajet->setPrixPassager($data['prix']);
+			
             $trajet->setVoiture($voiture);
+			
+			$trajet->setNbPlace($data['places']);
+			$trajet->setEstEcologique($data['est_ecologique'] ?? false);
+			
             $trajet->setChauffeur($user);
             $trajet->setStatutCovoiturage($statut);
-			$trajet->setDateCreation(new \DateTime());
+			
+			$trajet->setDureeTrajet((int) $data['duree_minutes']); 
+			$trajet->setDistanceTrajet($data['distance_km']);
+			
             $em->persist($trajet);
             $em->flush();
+
+		// Envoi du mail de confirmation
+        $mailService->send(
+            $user->getEmail(),
+            "Confirmation de création de votre compte Ecoride",
+            sprintf("Bonjour %s,
+
+Votre covoiturage a bien été enregistré dans l'application Ecoride.
+
+🗓 Date de création : %s
+🪪 Pseudo : %s
+📩 Adresse email : %s
+
+Votre mot de passe n'est pas communiqué par raison de sécurité.
+En cas d'oubli de vos identifiants, cliquer sur 'Mot de passe oublié' dans la page de connexion.
+
+Vous pouvez désormais utiliser la totalité des fonctionnalités de l'application et également compléter votre profil dans l'onglet 'Compte Utilisateur'.
+
+Merci pour votre confiance et bon trajet !
+
+L’équipe EcoRide",
+		
+                $trajet->getVilleDepart(),
+                $trajet->getVilleArrivee(),
+                $trajet->getDateDepart(),
+                $trajet->getHeureDepart(),
+                $trajet->getPrixPassager(),
+                $trajet->getDureeTrajet(),
+                $trajet->getDistanceTrajet(),
+                $trajet->getVoiture()
+
+            )
+        );
 
             return $this->json([
                 'success' => true,
                 'trajet_id' => $trajet->getCovoiturageId()
             ]);
+			
         } catch (\Exception $e) {
             return $this->json([
                 'success' => false,

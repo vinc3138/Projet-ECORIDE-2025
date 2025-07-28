@@ -1,0 +1,29 @@
+# Commandes de lancement
+--------------------------------------------------
+npm run dev
+symfony server:start --allow-http
+
+
+# Test des routes
+--------------------------------------------------
+Test Symfony :
+
+https://127.0.0.1:8000/api/recherche-trajet?depart=Paris&destination=Lyon&date=
+
+https://127.0.0.1:8000/api/login
+
+https://127.0.0.1:8000/api/avis/chauffeur
+
+http://localhost:5173/test-connexion
+
+
+# Adresse Mailtrap
+--------------------------------------------------
+Mailtrap :
+https://mailtrap.io/inboxes
+
+
+
+# Lien Github
+--------------------------------------------------
+https://github.com/vinc3138/Projet-ECORIDE-2025.git

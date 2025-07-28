@@ -63,6 +63,12 @@ class DetailTrajetController extends AbstractController
                 'photo' => $chauffeur->getPhoto() ?? null,
                 'avis' => $avisData,
             ],
+			'duree' => sprintf(
+				'%02dh%02d',
+				floor($trajet->getDureeTrajet() / 60),
+				$trajet->getDureeTrajet() % 60
+			),
+			'distance' => $trajet->getDistanceTrajet(),
         ];
 
         return new JsonResponse($data);

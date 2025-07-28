@@ -1,12 +1,26 @@
 const express = require('express');
 const cors = require('cors');
+const cron = require('node-cron');
+const { MongoClient } = require('mongodb');
+
+const { genererKpisQuotidiens } = require('./scripts/genererKpisQuotidiens');
+const { enregistrerCovoiturage } = require('./scripts/enregistrerCovoiturage');
+
 const app = express();
-const port = 8000;
+const PORT = 8000;
+
+const uri = 'mongodb+srv://administrateur:STUDI2025!@cluster0.ygqxdsj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const client = new MongoClient(uri);
 
 app.use(cors());
 app.use(express.json());
 
-// Utilisateur de test
+// Route racine
+app.get('/', (req, res) => {
+  res.send('Bienvenue sur le serveur de test !');
+});
+
+// Simuler un utilisateur
 const user = {
   email: 'employe@employe.fr',
   password: 'STUDi2025!',
@@ -14,11 +28,10 @@ const user = {
   pseudo: 'EmployeTest'
 };
 
+// Endpoint login fictif
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
-
   if (username === user.email && password === user.password) {
-    // Réponse simulée : token fictif + infos utilisateur
     return res.json({
       message: 'Connexion réussie !',
       token: 'fake-jwt-token-123456',
@@ -33,6 +46,64 @@ app.post('/api/login', (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Serveur de test démarré sur http://localhost:${port}`);
+// Route API pour les KPI journaliers
+app.get('/api/kpi/journalier', async (req, res) => {
+  try {
+    const db = client.db('plateforme_covoiturage');
+    const kpis = db.collection('kpi_journalier');
+
+    const start = req.query.start;
+    const end = req.query.end;
+
+    const query = {};
+    if (start && end) {
+      query.date = { $gte: start, $lte: end };
+    }
+
+    const result = await kpis.find(query).sort({ date: 1 }).toArray();
+    res.json(result);
+  } catch (error) {
+    console.error("Erreur lors de la récupération des KPIs :", error);
+    res.status(500).json({ error: "Erreur serveur" });
+  }
 });
+
+// Démarrage principal
+async function demarrerServeur() {
+  try {
+    await client.connect(); // Connexion MongoDB persistante
+    console.log('Connexion à MongoDB établie.');
+
+    console.log('Début de la synchronisation SQL -> Mongo...');
+    await enregistrerCovoiturage();
+    console.log('Synchronisation SQL -> Mongo réussie.');
+
+    console.log('Génération des KPIs...');
+    await genererKpisQuotidiens();
+    console.log('KPIs générés avec succès !');
+
+    // Démarrage du serveur
+    app.listen(PORT, () => {
+      console.log(`🚀 Serveur démarré sur http://localhost:${PORT}`);
+    });
+
+    // Tâche cron (décommenter si nécessaire)
+    cron.schedule('0 0 * * *', async () => {
+      console.log('Tâche cron : génération automatique des KPIs...');
+      try {
+        await genererKpisQuotidiens();
+        console.log('KPIs générés avec succès (cron).');
+      } catch (err) {
+        console.error('Erreur lors de la génération des KPIs (cron) :', err);
+      }
+    });
+
+
+  } catch (err) {
+    console.error('Erreur lors du démarrage du serveur :', err);
+    process.exit(1);
+  }
+}
+
+// Lancer le serveur
+demarrerServeur();

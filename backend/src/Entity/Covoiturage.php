@@ -9,6 +9,11 @@ use App\Repository\CovoiturageRepository;
 #[ORM\Table(name: 'covoiturage')]
 class Covoiturage
 {
+		public function __construct()
+	{
+		$this->dateCreation = new \DateTime(); // Date et heure actuelles au moment de l'instanciation
+	}
+	
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'covoiturage_id', type: 'integer')]
@@ -41,14 +46,11 @@ class Covoiturage
     #[ORM\Column(name: 'heure_arrivee', type: 'time')]
     private ?\DateTimeInterface $heureArrivee = null;
 
-    #[ORM\Column(name: 'date_fin', type: 'datetime', nullable: true)]
-    private ?\DateTimeInterface $dateFin = null;
-
     #[ORM\Column(name: 'ville_arrivee', length: 50)]
     private ?string $villeArrivee = null;
 
-    #[ORM\Column(name: 'duree_trajet', type: 'time', options: ["default" => "00:00:00"])]
-    private ?\DateTimeInterface $dureeTrajet = null;
+	#[ORM\Column(name: 'duree_trajet', type: 'integer', options: ["default" => 0])]
+	private ?int $dureeTrajet = 0;
 
     #[ORM\Column(name: 'nb_place', type: 'integer', options: ["default" => 0])]
     private ?int $nbPlace = 0;
@@ -178,17 +180,6 @@ class Covoiturage
         return $this;
     }
 
-    public function getDateFin(): ?\DateTimeInterface
-    {
-        return $this->dateFin;
-    }
-
-    public function setDateFin(?\DateTimeInterface $dateFin): self
-    {
-        $this->dateFin = $dateFin;
-        return $this;
-    }
-
     public function getVilleArrivee(): ?string
     {
         return $this->villeArrivee;
@@ -200,20 +191,16 @@ class Covoiturage
         return $this;
     }
 
-	public function getDureeTrajet(): ?string
+	public function getDureeTrajet(): ?int
 	{
-		if ($this->dureeTrajet === null) {
-			return null;
-		}
-		//return $this->dureeTrajet->format('H:i');	// Format "03:15"
-		return $this->dureeTrajet->format('H\hi');  // Format "03h15"
+		return $this->dureeTrajet;
 	}
 
-    public function setDureeTrajet(\DateTimeInterface $dureeTrajet): self
-    {
-        $this->dureeTrajet = $dureeTrajet;
-        return $this;
-    }
+	public function setDureeTrajet(?int $minutes): self
+	{
+		$this->dureeTrajet = $minutes;
+		return $this;
+	}
 
     public function getNbPlace(): ?int
     {

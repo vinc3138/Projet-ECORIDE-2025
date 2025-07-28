@@ -48,7 +48,11 @@ class RechercheTrajetController extends AbstractController
 			'villeArrivee' => $trajet->getVilleArrivee(),
 			'dateDepart' => $trajet->getDateDepart() ? $trajet->getDateDepart()->format('Y-m-d') : null,
 			'prix' => $trajet->getPrixPassager(),
-			'duree' => $trajet->getDureeTrajet(),
+			'duree' => sprintf(
+				'%02dh%02d',
+				floor($trajet->getDureeTrajet() / 60),
+				$trajet->getDureeTrajet() % 60
+			),
 			'distance' => $trajet->getDistanceTrajet(),
 			'ecologique' => $trajet->getEstEcologique(),
 			'chauffeur' => [
