@@ -9,7 +9,7 @@ const { enregistrerCovoiturage } = require('./scripts/enregistrerCovoiturage');
 const app = express();
 const PORT = 8000;
 
-const uri = 'mongodb+srv://administrateur:STUDI2025!@cluster0.ygqxdsj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const uri = 'mongodb+srv://xxxxxxx:xxxxxxxxx@cluster0.xxxxxxx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 const client = new MongoClient(uri);
 
 app.use(cors());
@@ -22,8 +22,8 @@ app.get('/', (req, res) => {
 
 // Simuler un utilisateur
 const user = {
-  email: 'employe@employe.fr',
-  password: 'STUDi2025!',
+  email: 'xxxxx@xxxxx.fr',
+  password: 'xxxxxxxx',
   privilege: 'EMPLOYE',
   pseudo: 'EmployeTest'
 };
