@@ -1,7 +1,7 @@
 const { MongoClient } = require('mongodb');
 const mysql = require('mysql2/promise');
 
-const uri = 'mongodb+srv://administrateur:STUDI2025!@cluster0.ygqxdsj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const uri = 'mongodb+srv://xxxxxxx:xxxxxxx@cluster0.ygqxdsj.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
 
 async function enregistrerCovoiturage() {
   const client = new MongoClient(uri);
@@ -15,10 +15,10 @@ async function enregistrerCovoiturage() {
 
     // Connexion SQL
     sqlConnection = await mysql.createConnection({
-      host: '127.0.0.1',
-      user: 'root',
-      password: 'STUDI2025',
-      database: 'ecoride',
+      host: 'xxxxxxx',
+      user: 'xxxxxx',
+      password: 'xxxxxx',
+      database: 'xxxxxx',
       port: 3306,
     });
 
