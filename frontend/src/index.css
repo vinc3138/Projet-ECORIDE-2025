@@ -1,3 +1,11 @@
+/* ******* POLICE - Import des fonts Google ********/
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c&display=swap');
+
+
+
+
+/* ******* GENERAL ********/
+
 * {
   margin: 0;
   padding: 0;
@@ -42,6 +50,11 @@ html, body {
   overflow: hidden;  			/* Scroll uniquement sur main */
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 /* *********************************************************************************************************************** */
 
 /* ******* HEADER ********/
@@ -51,6 +64,12 @@ header {
   background-color : rgba(216,216,216);
   flex-shrink: 0;
   height: 8vh;
+}
+
+/* ******* NOM ECORIDE ********/
+.font-ecoride {
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  font-size: 1.5rem;
 }
 
 /* *********************************************************************************************************************** */
@@ -95,13 +114,13 @@ footer {
   left: 0;
   width: 19.53vw;						/* Soit 250px */
   bottom: 0;
-  background-size: fill;
+  background-size: auto 100%;
   background-position: left;
-  opacity: 0.25;            			/* Transparence */
+  opacity: 0.5;            			/* Transparence */
   z-index: 1;               			/* Derrière le contenu */
   
   /* Applique un flou global */
-  filter: blur(4px);
+  filter: blur(0.5px);
   
   /* Effet estompé sur le bord droit */
   -webkit-mask-image: linear-gradient(to right, black 15%, transparent 100%);

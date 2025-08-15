@@ -139,3 +139,49 @@
     height: 200px;
   }
 }
+
+
+
+
+
+/* Affichage des photos des chauffeurs lors des recherches de trajet */
+.cercle-responsive {
+  width: 250px;
+  height: 250px;
+  border-color: #b2d8c4;
+  border-width: 2px;
+  border-style: solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: 0 .125rem .25rem rgba(0,0,0,.075); /* comme shadow-sm */
+  overflow: hidden;
+}
+
+/* Réduction pour écrans md et en dessous */
+@media (max-width: 991.98px) {  /* Bootstrap lg breakpoint = 992px */
+  .cercle-responsive {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+/* Optionnel : encore plus petit pour xs/sm */
+@media (max-width: 575.98px) {
+  .cercle-responsive {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+
+.custom-icon {
+  font-size: 2.5rem; /* taille par défaut */
+}
+
+@media (min-width: 992px) { /* lg et plus */
+  .custom-icon {
+    font-size: 5rem; /* plus grand sur grand écran */
+  }
+}
