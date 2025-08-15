@@ -1,0 +1,102 @@
+{/* --------------------------------------------- Import React --------------------------------------------- */}
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+
+
+{/* --------------------------------------------- Imports des fonctions de contrôle de token --------------------------------------------- */}
+import LogoutIfExpirate from './context/LogoutIfExpirate';
+
+
+{/* --------------------------------------------- Imports des pages génériques --------------------------------------------- */}
+	
+{/* ----- Imports des Entêtes et Pied de page ----- */}
+import Header from './components/Header.jsx';
+import Footer from './components/Footer.jsx';
+	
+{/* ----- Imports des Aside ----- */}	
+import LeftAside from "./components/LeftAside";
+
+
+{/* ------------------------------------------------------------ Imports des pages publiques ------------------------------------------------------------ */}
+	
+{/* ----- Imports de la page d'accueil ----- */}
+import Home from './pages/Home.jsx';
+	
+{/* ----- Imports des pages "Recherche de trajet" et "Détail de trajet" ----- */}
+import RechercheTrajet from './pages/RechercheTrajet.jsx';
+import DetailTrajet from './pages/DetailTrajet.jsx';
+	
+{/* ----- Imports des pages "Inscription" et "Connexion" ----- */}
+import Inscription from './pages/Inscription.jsx';
+import Connexion from './pages/Connexion.jsx';
+	
+{/* ----- Imports de la page "A propos" ----- */}
+import Apropos from './pages/Apropos.jsx';
+	
+{/* ----- Imports de la page "Mentions légales" ----- */}
+import MentionsLegales from './pages/MentionsLegales.jsx';	
+	
+{/* ----- Imports de la page "Renouvellement MDP" ----- */}
+{/* import MotDePasseOublie from './pages/RenouvellementMDP.jsx'; */}
+
+{/* ----- Imports de la page "Réinitialisation MDP" ----- */}
+ {/*import ReinitialisationMDP from './pages/ReinitialisationMDP.jsx'; */}
+	
+{/* ----- Imports de la page "Page non trouvée (error 404)" ----- */}
+import NotFound from './pages/NotFound.jsx';
+	
+	
+{/* ------------------------------------------------------------ Imports des pages privées ------------------------------------------------------------ */}
+	
+{/* ----- Imports de la page "Compte" selon le rôle et le privilège de l'utilisateur ----- */}
+import CompteUtilisateur from './pages/CompteUtilisateur.jsx';
+import CompteEmploye from './pages/CompteEmploye.jsx';
+import CompteAdministrateur from './pages/CompteAdministrateur.jsx';
+
+{/* ----- Imports de la page "Historique trajets" ----- */}
+import HistoriqueTrajet from './pages/HistoriqueTrajet.jsx';
+
+{/* ------------------------------------------------------------ Imports des pages de test ------------------------------------------------------------ */}
+
+{/* ----- Imports de la page TEST "Login" ----- */}
+import ConnexionTester from './tests/US1_LoginTest.jsx';
+
+
+
+
+
+{/* --------------------------------------------- Routage des pages --------------------------------------------- */}
+export default function App() {
+  return (
+    <>
+      <Header />
+      <LeftAside />
+      <div className="wrapper">
+        <main>
+		
+			<LogoutIfExpirate />
+			
+			<Routes>
+			<Route path="/" element={<Home />} />
+			<Route path="/recherchetrajet" element={<RechercheTrajet />} />
+			<Route path="/trajetdetail/:id" element={<DetailTrajet />} />
+			<Route path="/inscription" element={<Inscription />} />
+			<Route path="/connexion" element={<Connexion />} />
+			<Route path="/compteutilisateur" element={<CompteUtilisateur />} />
+			<Route path="/compteemploye" element={<CompteEmploye />} />
+			<Route path="/compteadministrateur" element={<CompteAdministrateur />} />
+			<Route path="/historiquetrajet" element={<HistoriqueTrajet />} />
+			<Route path="/apropos" element={<Apropos />} />
+			<Route path="/mentions-legales" element={<MentionsLegales/>} />
+
+			<Route path="*" element={<NotFound />} />
+
+			<Route path="/test-connexion" element={<ConnexionTester />} />
+			</Routes>
+				
+        </main>
+      </div>
+      <Footer />
+    </>
+  );
+}

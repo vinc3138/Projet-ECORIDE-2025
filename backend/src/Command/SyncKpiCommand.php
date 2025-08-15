@@ -1,0 +1,71 @@
+<?php
+
+namespace App\Command;
+
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+
+#[AsCommand(
+    name: 'sync:kpi',
+    description: 'Add a short description for your command',
+)]
+class SyncKpiCommand extends Command
+{
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    protected function configure(): void
+    {
+        $this
+            ->addArgument('arg1', InputArgument::OPTIONAL, 'Argument description')
+            ->addOption('option1', null, InputOption::VALUE_NONE, 'Option description')
+        ;
+    }
+
+	protected function execute(InputInterface $input, OutputInterface $output): int
+	{
+		$sql = $this->getContainer()->get('doctrine')->getConnection();
+		$mongo = $this->getContainer()->get('doctrine_mongodb')->getManager();
+
+		// 1. Covoiturages par jour
+		$trajets = $sql->fetchAllAssociative("
+			SELECT date_trajet, COUNT(*) AS nb
+			FROM covoiturages
+			GROUP BY date_trajet
+		");
+
+		// 2. Crédits par jour (2 * réservations)
+		$credits = $sql->fetchAllAssociative("
+			SELECT c.date_trajet, COUNT(r.id) * 2 AS credits
+			FROM covoiturages c
+			JOIN reservations r ON r.covoiturage_id = c.id
+			GROUP BY c.date_trajet
+		");
+
+		// 3. Fusion et enregistrement MongoDB
+		foreach ($trajets as $t) {
+			$date = new \DateTime($t['date_trajet']);
+			$nb = (int) $t['nb'];
+			$creditsDuJour = array_filter($credits, fn($c) => $c['date_trajet'] === $t['date_trajet']);
+			$creditsGagnes = $creditsDuJour ? (int) $creditsDuJour[array_key_first($creditsDuJour)]['credits'] : 0;
+
+			$kpi = new KpiJour();
+			$kpi->setDate($date);
+			$kpi->setNbCovoiturages($nb);
+			$kpi->setCreditsGagnes($creditsGagnes);
+			
+			$mongo->persist($kpi);
+		}
+
+		$mongo->flush();
+		return Command::SUCCESS;
+	}
+
+}

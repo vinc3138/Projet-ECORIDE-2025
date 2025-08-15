@@ -1,0 +1,76 @@
+security:
+    password_hashers:
+        App\Entity\Utilisateur:
+            algorithm: auto
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\Utilisateur
+                property: email
+
+    firewalls:
+        test_password:
+            pattern: ^/api/test-password$
+            stateless: true
+            security: false
+
+        # Route pour login avec authentification JSON
+        login:
+            pattern: ^/api/login$
+            stateless: true
+            json_login:
+                check_path: /api/login
+                username_path: email
+                password_path: password
+                success_handler: App\Security\LoginSuccessHandler
+                # failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        # Route pour inscription, sans sécurité (publique, non protégée)
+        register:
+            pattern: ^/api/register$
+            stateless: true
+            security: false
+
+        # Route pour recherche de trajets (publique, non protégée)
+        public_recherche_trajet:
+            pattern: ^/api/recherche-trajet$
+            stateless: true
+            security: false
+            
+        # Route pour détails de trajet (publique, non protégée)
+        trajetdetail:
+            pattern: ^/api/trajetdetail
+            stateless: true
+            security: false 
+
+        # Firewall pour API sécurisé par JWT
+        api:
+            pattern: ^/api
+            stateless: true
+            provider: app_user_provider
+            jwt: ~
+            
+        # Dev tools (profiler, assets)
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+    access_control:
+        # Autorise les requêtes OPTIONS (pour CORS)
+        - { path: ^/api, roles: PUBLIC_ACCESS	, methods: [OPTIONS] }
+
+        # Routes publiques sans être connecté (recherche de trajet, détail des trajets, à propos, et inscription)
+        - { path: ^/api/recherche-trajet, roles: PUBLIC_ACCESS	 }
+        - { path: ^/api/trajetdetail, roles: PUBLIC_ACCESS	 }
+        - { path: ^/api/apropos, roles: PUBLIC_ACCESS	 }
+        - { path: ^/api/register, roles: PUBLIC_ACCESS	 }
+
+        # Toutes les autres requêtes API nécessitent un token
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+
+services:
+    App\Repository\ReservationRepository:
+        arguments:
+            $registry: '@doctrine'
+            $entityClass: 'App\Entity\Reservation'

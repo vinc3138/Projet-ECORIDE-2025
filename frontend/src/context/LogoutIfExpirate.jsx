@@ -1,0 +1,32 @@
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { isTokenExpired } from './expiredToken';
+
+
+
+const LogoutIfExpirate = () => {
+  const navigate = useNavigate();
+
+  const checkToken = () => {
+    const token = localStorage.getItem('jwt_token');
+	if (isTokenExpired(token)) {
+	  localStorage.removeItem('jwt_token');
+	  localStorage.setItem('logoutMessage', 'Token expiré : merci de vous reconnecter');
+	  navigate('/connexion');
+	}
+  };
+
+  useEffect(() => {
+    checkToken(); 			// vérifie immédiatement au montage du composant
+
+    const interval = setInterval(() => {
+      checkToken();
+    }, 60000);				// check toutes les 60s
+
+    return () => clearInterval(interval);
+  }, [navigate]);
+
+  return null;
+};
+
+export default LogoutIfExpirate;

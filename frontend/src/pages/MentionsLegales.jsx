@@ -1,0 +1,64 @@
+import React, { useEffect } from 'react';
+
+
+export default function MentionsLegales() {
+
+  return (
+
+      <div className="jumbotron text-left">
+        <br />
+        <h4 className="display-8 text-success">Mentions légales</h4>
+        <p>
+          Conformément aux dispositions de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique (LCEN), voici les mentions légales de notre site internet :
+        </p>
+
+        <h5 className="text-success">1. Présentation du site</h5>
+        <p>
+          Le site internet <strong>www.ecoride2025.alwaysdata.net</strong> est édité par la société EcoRide.<br />
+          <strong>Raison sociale :</strong> EcoRide<br />
+          <strong>Siège social :</strong> 123 Rue de l'Environnement, 49100 Angers, France<br />
+          <strong>Capital social :</strong> 50 000 €<br />
+          <strong>SIRET :</strong> 123 456 789 00012<br />
+          <strong>Numéro de TVA :</strong> FR123456789012
+        </p>
+
+        <h5 className="text-success">2. Responsable de la publication</h5>
+        <p>
+          Le responsable de la publication du site est : <strong>Jean Dupont</strong><br />
+          <strong>Email :</strong> contact@ecoride.com<br />
+          <strong>Téléphone :</strong> 02 12 34 56 78
+        </p>
+
+        <h5 className="text-success">3. Hébergement</h5>
+        <p>
+          Le site est hébergé par : <strong>alwaysdata</strong><br />
+          <strong>Siège social :</strong> 2 rue STUDI, 75003 Paris, France<br />
+          <strong>Téléphone :</strong> 01 02 03 04 05
+        </p>
+
+        <h5 className="text-success">4. Propriété intellectuelle</h5>
+        <p>
+          L'ensemble du contenu du site (textes, images, logos, etc.) est protégé par la législation française et internationale sur le droit d'auteur et la propriété intellectuelle.<br />
+          Toute reproduction ou utilisation de ces éléments sans autorisation préalable est interdite.
+        </p>
+
+        <h5 className="text-success">5. Protection des données personnelles</h5>
+        <p>
+          Les données collectées sur ce site sont uniquement destinées à un usage interne et ne sont jamais partagées avec des tiers, sauf pour l'exécution de services de paiement ou la fourniture de services demandés par l'utilisateur.<br />
+          Vous avez le droit d'accéder, de rectifier, de supprimer vos données personnelles en contactant le responsable de la publication à l'adresse email suivante : <strong>contact@ecoride.com</strong>
+        </p>
+
+        <h5 className="text-success">6. Cookies</h5>
+        <p>
+          Ce site utilise des cookies pour améliorer l'expérience utilisateur. Vous pouvez désactiver les cookies à tout moment en modifiant les paramètres de votre navigateur.
+        </p>
+
+        <h5 className="text-success">7. Limitation de responsabilité</h5>
+        <p>
+          EcoRide ne saurait être tenu responsable des dommages directs ou indirects, tels que la perte de données ou de profits, résultant de l'utilisation du site ou de l'impossibilité d'y accéder.
+        </p>
+
+        <hr className="my-8" />
+      </div>
+  );
+}

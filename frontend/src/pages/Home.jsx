@@ -1,0 +1,203 @@
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { getCitySuggestions, isCityValid } from '../utils/listeVilleTrajet';
+import '../responsive.css';
+
+export default function Home() {
+  
+
+  const [depart, setDepart] = useState('');
+  const [destination, setDestination] = useState('');
+  const [date, setDate] = useState('');
+  const [departSuggestions, setDepartSuggestions] = useState([]);
+  const [destinationSuggestions, setDestinationSuggestions] = useState([]);
+  const [departValid, setDepartValid] = useState(true);
+  const [destinationValid, setDestinationValid] = useState(true);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (depart.length > 1) {
+      getCitySuggestions(depart).then(setDepartSuggestions);
+    } else {
+      setDepartSuggestions([]);
+    }
+  }, [depart]);
+
+  useEffect(() => {
+    if (destination.length > 1) {
+      getCitySuggestions(destination).then(setDestinationSuggestions);
+    } else {
+      setDestinationSuggestions([]);
+    }
+  }, [destination]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const isDepartValid = isCityValid(depart, departSuggestions);
+    const isDestinationValid = isCityValid(destination, destinationSuggestions);
+
+    setDepartValid(isDepartValid);
+    setDestinationValid(isDestinationValid);
+
+	if (isDepartValid && isDestinationValid) {
+	  const params = new URLSearchParams();
+
+	  if (depart) params.append("depart", depart);
+	  if (destination) params.append("destination", destination);
+	  if (date) params.append("date", date);
+
+	  navigate(`/recherchetrajet?${params.toString()}`);
+	}
+
+  };
+
+  return (
+    <>
+      <div className="container">
+
+		<div className="jumbotron text-center">
+		  <h1 className="display-4">EcoRide</h1>
+		  <p className="lead">La plateforme de covoiturage écoresponsable</p>
+		  <hr className="my-1" />
+		</div>
+		
+		<div className="jumbotron text-center d-none d-lg-block">
+          <p className="display-8">
+            Grâce à EcoRide, vous pouvez désormais rechercher vos trajets et réserver rapidement.<br />
+            Visualisez les trajets disponibles<br />
+            Créez votre compte et connectez-vous !<br />
+            Réservez votre trajet et voyagez !<br />
+          </p>
+		  <hr className="my-1" />
+        </div>
+
+        <div className="container">
+          <h6 className="row align-items-center">Rechercher un trajet</h6>
+
+          <form className="row align-items-center search-form" onSubmit={handleSubmit}>
+            <label htmlFor="depart" className="col text-sm-end text-md-end text-lg-start d-none d-lg-block">Départ</label>
+            <input
+              className={`bg-light text-dark col rounded-pill ${departValid ? '' : 'is-invalid'}`}
+              type="text"
+              id="depart"
+              name="depart"
+              placeholder="Départ"
+              value={depart}
+              onChange={(e) => setDepart(e.target.value)}
+              list="depart-list"
+              required
+              autoComplete="off"
+            />
+            <datalist id="depart-list">
+              {departSuggestions.map((city, idx) => (
+                <option key={idx} value={city} />
+              ))}
+            </datalist>
+
+            <label htmlFor="destination" className="col text-sm-end text-md-end text-lg-start w-80 d-none d-lg-block">Destination</label>
+            <input
+              className={`bg-light text-dark col rounded-pill ${destinationValid ? '' : 'is-invalid'}`}
+              type="text"
+              id="destination"
+              name="destination"
+              placeholder="Destination"
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
+              list="destination-list"
+              required
+              autoComplete="off"
+            />
+            <datalist id="destination-list">
+              {destinationSuggestions.map((city, idx) => (
+                <option key={idx} value={city} />
+              ))}
+            </datalist>
+
+            <label htmlFor="date" className="col text-sm-end text-md-end text-lg-start d-none d-lg-block">Date</label>
+            <input
+              className="bg-light text-dark col col-xs-12 rounded-pill w-100"
+              type="date"
+              id="date"
+              name="date"
+              placeholder="Date de départ"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
+
+            <div className="col"></div>
+			
+			<div className="col">
+				<button className="col btn btn-success w-100 mt-3 btn-md btn-block " type="submit">
+				  Rechercher
+				</button>
+			</div>
+			
+          </form>
+
+          {/* Message d'erreur si villes non valides */}
+          {(!departValid || !destinationValid) && (
+            <div className="alert alert-danger mt-3" role="alert">
+              Merci de choisir des villes valides dans les suggestions
+            </div>
+          )}
+        </div>
+
+        <hr className="my-8" />
+        
+		<div className="row">
+		
+		  <div className="col-12 col-md-4 mb-4">
+			<div className="image-wrapper">
+			  <img
+				className="picture_style_01"
+				src="/Pictures/PICTURE_SEARCH.jpg"
+				alt="Chercher un trajet"
+			  />
+			  <Link
+				className="btn btn-success btn-lg btn-block centered-button fs-6"
+				to="/recherchetrajet"
+			  >
+				Trouver un trajet
+			  </Link>
+			</div>
+		  </div>
+
+		  <div className="col-12 col-md-4 mb-4">
+			<div className="image-wrapper">
+			  <img
+				className="picture_style_01"
+				src="/Pictures/PICTURE_CONNECT.jpg"
+				alt="Se connecter"
+			  />
+			  <Link
+				className="btn btn-success btn-lg btn-block centered-button fs-6"
+				to="/connexion"
+			  >
+				Se connecter
+			  </Link>
+			</div>
+		  </div>
+
+		  <div className="col-12 col-md-4 mb-4">
+			<div className="image-wrapper">
+			  <img
+				className="picture_style_01"
+				src="/Pictures/PICTURE_CREATE.jpg"
+				alt="Créer un compte"
+			  />
+			  <Link
+				className="btn btn-success btn-lg btn-block centered-button fs-6"
+				to="/inscription"
+			  >
+				S'inscrire
+			  </Link>
+			</div>
+		  </div>
+		</div>
+		
+      </div>
+    </>
+  );
+}

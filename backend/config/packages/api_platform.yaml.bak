@@ -1,0 +1,12 @@
+api_platform:
+  swagger:
+    api_keys:
+      JWT:
+        name: Authorization
+        type: header
+    mapping:
+        paths: ['%kernel.project_dir%/src/Entity']
+    doctrine:
+        enabled: true
+    doctrine_mongodb_odm:
+        enabled: false

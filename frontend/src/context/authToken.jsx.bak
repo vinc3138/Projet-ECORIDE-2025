@@ -1,0 +1,116 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useNotification } from './NotificationContext';
+import { jwtDecode } from 'jwt-decode';
+
+const AuthContext = createContext();
+
+
+
+export function AuthProvider({ children }) {
+	
+	const [user, setUser] = useState(() => {
+		const savedUser = localStorage.getItem('user');
+		return savedUser ? JSON.parse(savedUser) : null;
+	});
+    
+    const { showMessage } = useNotification();
+	
+	const [token, setToken] = useState(() => localStorage.getItem('jwt_token'));
+
+	const API_URL = import.meta.env.VITE_API_URL;
+
+
+
+
+	// Vérifie si un token est encore valide
+	const isTokenValid = (token) => {
+	if (!token) return false;
+	try {
+	  const decoded = jwtDecode(token);
+	  const now = Date.now() / 1000; 			// en secondes
+	  return decoded.exp && decoded.exp > now;
+	} catch {
+	  return false;
+	}
+	};
+
+
+  // Vérification au montage du provider
+	useEffect(() => {
+	if (token && !isTokenValid(token)) {
+	  logout();
+	} else if (token && isTokenValid(token)) {
+	  // Si le token est valide, s'assurer que l'utilisateur est en mémoire
+	  const savedUser = localStorage.getItem('user');
+	  if (savedUser) setUser(JSON.parse(savedUser));
+	}
+	}, [token]);
+
+
+	// Déconnexion auto à l’expiration
+	useEffect(() => {
+	if (token) {
+	  try {
+		const decoded = jwtDecode(token);
+		if (decoded.exp) {
+		  const expiresInMs = decoded.exp * 1000 - Date.now();
+		  const timeout = setTimeout(() => {
+			logout();
+			showMessage('Vous avez été déconnecté automatiquement (temps de connexion dépassé)');
+		  }, expiresInMs);
+		  return () => clearTimeout(timeout);
+		}
+	  } catch {}
+	}
+	}, [token, showMessage]);
+
+
+	// Connexion
+	const login = async (email, password) => {
+	const res = await fetch(`${API_URL}/api/login`, {
+	  method: 'POST',
+	  headers: { 'Content-Type': 'application/json' },
+	  body: JSON.stringify({ email, password }),
+	});
+
+	if (!res.ok) {
+	  const errorData = await res.json();
+	  throw new Error(errorData.message || 'Échec de la connexion');
+	}
+
+	const data = await res.json();
+
+	localStorage.setItem('jwt_token', data.token);
+	localStorage.setItem('user', JSON.stringify(data.user));
+
+	setToken(data.token);
+	setUser(data.user);
+	};
+
+
+	// Mise à jour des données lors de la déconnexion
+	const logout = () => {
+		localStorage.removeItem('jwt_token');
+		localStorage.removeItem('user');
+		setToken(null);
+		setUser(null);
+	};
+
+
+	return (
+	
+		<AuthContext.Provider value={{ user, token, login, logout, isTokenValid }}>
+			
+			{children}
+			
+		</AuthContext.Provider>
+		
+	);
+
+}
+
+export function useAuth() {
+
+	return useContext(AuthContext);
+
+}

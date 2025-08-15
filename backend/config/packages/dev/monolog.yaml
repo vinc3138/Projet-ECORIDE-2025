@@ -1,0 +1,7 @@
+monolog:
+    channels: ['lexik_jwt_authentication']
+    handlers:
+        lexik_jwt_authentication:
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%.jwt.log"
+            level: debug

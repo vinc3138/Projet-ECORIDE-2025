@@ -1,0 +1,7 @@
+lexik_jwt_authentication:
+    secret_key: '%kernel.project_dir%/config/jwt/private.pem' # chemin vers la clé privée
+    public_key: '%kernel.project_dir%/config/jwt/public.pem'  # chemin vers la clé publique
+    pass_phrase: '%env(JWT_PASSPHRASE)%'
+    token_ttl: 900
+    encoder:
+        signature_algorithm: RS256
